@@ -1,11 +1,14 @@
-import http from 'http';
+import express  from 'express';
+import http     from 'http';
 import socketio from 'socket.io';
-import { log } from './utils';
+
+import { log }    from './utils';
 import { config } from './config';
 
-const app = http.createServer();
-const io = socketio(app);
+const app = express();
+const server = http.Server(app);
+const io = socketio(server);
 
-app.listen(config.port, () => {
+server.listen(config.port, () => {
     log(`Chat server listening at port ${config.port}`);
 });
