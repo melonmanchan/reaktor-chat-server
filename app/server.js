@@ -1,10 +1,11 @@
 import http from 'http';
 import socketio from 'socket.io';
 import { log } from './utils';
+import { config } from './config';
 
 const app = http.createServer();
 const io = socketio(app);
 
-app.listen(8000, () => {
-    log('Chat server listening at port 8000');
+app.listen(config.port, () => {
+    log(`Chat server listening at port ${config.port}`);
 });
