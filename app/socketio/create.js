@@ -1,6 +1,7 @@
 import socketio from 'socket.io';
 
 import { log, LOG_TYPES } from '../utils';
+import { decodeJWT }      from '../utils/jwt';
 import EVENT_TYPES        from './eventtypes';
 
 const sockets = [];
@@ -9,42 +10,53 @@ function createSocketIO(server) {
     const io = socketio(server);
 
     io.on(EVENT_TYPES.NEW_CONNECTION, (socket) => {
-        const username = socket.handshake.query.username;
+        const token = socket.handshake.query.token;
 
-        if (!username) {
+        if (!token) {
             socket.disconnect(true);
             return;
         }
 
-        const existing = sockets.find(s => {
-            return s.user.username === username
-        });
+        decodeJWT(token)
+            .then((user) => {
+                const username = user.name;
 
-        if (existing) {
-            log('Name is taken!', LOG_TYPES.warn);
-            socket.emit(EVENT_TYPES.NAME_TAKEN, {});
-            socket.disconnect(true);
-            return;
-        }
+                const existing = sockets.find(s => {
+                    return s.user.username === username
+                });
 
-        log('New client connected: ' + username);
+                if (existing) {
+                    log('Name is taken!', LOG_TYPES.warn);
+                    socket.emit(EVENT_TYPES.NAME_TAKEN, {});
+                    socket.disconnect(true);
+                    return;
+                }
 
-        socket.on(EVENT_TYPES.DISCONNECT, () => {
-            log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
+                log('New client connected: ' + username);
 
-            const i = sockets.indexOf(socket);
+                socket.on(EVENT_TYPES.DISCONNECT, () => {
+                    log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
-            if (i === -1) {
-                return;
-            }
+                    const i = sockets.indexOf(socket);
 
-            sockets.splice(i, 1);
-        });
+                    if (i === -1) {
+                        return;
+                    }
 
-        socket.user = { username };
-        sockets.push(socket);
+                    sockets.splice(i, 1);
+                });
 
-        socket.emit(EVENT_TYPES.LOGGED_IN, {});
+                socket.user = { username };
+                sockets.push(socket);
+
+                socket.emit(EVENT_TYPES.LOGGED_IN, {});
+
+            })
+            .catch(e => {
+                socket.emit(EVENT_TYPES.BAD_JWT, {});
+                socket.disconnect(true);
+            });
+
     });
 }
 
