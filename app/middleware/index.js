@@ -1,3 +1,4 @@
 import logRequest from './logrequest';
+import resolveJWT from './resolvejwt';
 
-export { logRequest }
+export { logRequest, resolveJWT };

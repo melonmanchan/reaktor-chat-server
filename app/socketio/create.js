@@ -5,9 +5,10 @@ import { decodeJWT }      from '../utils/jwt';
 import EVENT_TYPES        from './eventtypes';
 
 const sockets = [];
+let io;
 
 function createSocketIO(server) {
-    const io = socketio(server);
+    io = socketio(server);
 
     io.on(EVENT_TYPES.NEW_CONNECTION, (socket) => {
         const token = socket.handshake.query.token;
@@ -47,8 +48,8 @@ function createSocketIO(server) {
                 });
 
                 socket.user = { username };
+                socket.user.rooms = [];
                 sockets.push(socket);
-
                 socket.emit(EVENT_TYPES.LOGGED_IN, {});
 
             })
@@ -60,4 +61,4 @@ function createSocketIO(server) {
     });
 }
 
-export { sockets, createSocketIO };
+export { sockets, createSocketIO, io };
