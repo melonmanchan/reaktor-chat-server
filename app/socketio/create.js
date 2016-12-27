@@ -47,6 +47,13 @@ function createSocketIO(server) {
                     sockets.splice(i, 1);
                 });
 
+                socket.on('message:post', (data) => {
+                    const channel = data.channel;
+                    const message = data.message;
+
+                    socket.broadcast.to(channel).emit('message:post', { message: message, user: socket.user })
+                });
+
                 socket.user = { username };
                 socket.user.rooms = [];
                 sockets.push(socket);
