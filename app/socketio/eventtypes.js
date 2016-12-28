@@ -4,4 +4,9 @@ export default {
 
     NAME_TAKEN     : 'name_taken',
     LOGGED_IN      : 'logged_in',
+
+    USER_JOINED    : 'user:joined',
+    USER_QUIT      : 'user:quit',
+
+    MESSAGE_POST   : 'message:post',
 };
