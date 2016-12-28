@@ -1,0 +1,11 @@
+web:
+  build: .
+  ports:
+    - "8000:800"
+  env_file:
+    - chat.env
+  links:
+    - "db:redis"
+
+db:
+  image: redis
