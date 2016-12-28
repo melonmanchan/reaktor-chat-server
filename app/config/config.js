@@ -4,5 +4,6 @@ export default {
     port: process.env.PORT             || 8000,
     processes: process.env.PROCESSES   || os.cpus().length,
     jwt_secret: process.env.JWT_SECRET || 'shhhh',
-    redis_url : process.env.REDIS_URL  || ''
+    redis_host : process.env.REDIS_PORT_6379_TCP_ADDR  || '',
+    redis_port : process.env.REDIS_PORT_6379_TCP_PORT  || 6379
 };
