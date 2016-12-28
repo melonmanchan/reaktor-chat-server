@@ -1,7 +1,9 @@
-import socketio from 'socket.io';
+import socketio      from 'socket.io';
+import socketioRedis from 'socket.io-redis';
 
 import { log, LOG_TYPES } from '../utils';
 import EVENT_TYPES        from './eventtypes';
+import config from '../config/config';
 import { validateSocketJWT, getSocketByUsername, disconnectSocket, bindEventsToSocket } from './socketutil';
 
 const sockets = [];
@@ -9,6 +11,7 @@ let io;
 
 function createSocketIO(server) {
     io = socketio(server);
+    io.adapter(socketioRedis(config.redis_url));
 
     io.on(EVENT_TYPES.NEW_CONNECTION, (socket) => {
 
