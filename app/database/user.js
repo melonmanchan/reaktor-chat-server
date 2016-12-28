@@ -32,4 +32,4 @@ function verifyUserPassword(hash, password) {
     return crypt.validateString(hash, password);
 }
 
-export { userModel, createUser, getUserByName };
+export { userModel, verifyUserPassword, createUser, getUserByName };

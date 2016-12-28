@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { signUserWithToken } from '../utils';
-import { userModel, createUser, getUserByName } from '../database/user';
+import { verifyUserPassword, createUser, getUserByName } from '../database/user';
 
 const router = express.Router();
 
@@ -36,18 +36,25 @@ router.post('/register', (req, res, next) => {
 
 router.post('/login', (req, res, next) => {
     const name = req.body.name;
+    const password = req.body.password
 
-    if (!name) {
+    if (!name || !password) {
         return res.status(400).json({ error: 'Missing parameter!' });
     }
 
-    signUserWithToken({ name })
-    .then(token => {
-        return res.status(200).json({ token });
-    })
-    .catch( e => {
-        return res.status(500).json({ error: e.message });
-    });
+    getUserByName(name)
+        .then(foundUser => {
+            return verifyUserPassword(foundUser.password, password);
+        })
+        .then(() => {
+            return signUserWithToken({ name: name });
+        })
+        .then(token => {
+            res.status(200).json({ token });
+        })
+        .catch(e => {
+            res.status(500).json({ error: e.message });
+        });
 });
 
 export default router;
