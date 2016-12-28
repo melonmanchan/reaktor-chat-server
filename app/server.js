@@ -3,12 +3,13 @@ import http     from 'http';
 import cors     from 'cors';
 import parser   from 'body-parser';
 
-import { config }         from './config';
-import { createSocketIO } from './socketio';
-import { log }            from './utils';
-import { logRequest }     from './middleware';
-import channels           from './routes/channels';
-import auth               from './routes/auth';
+import { config }                from './config';
+import { createSocketIO }        from './socketio';
+import { log }                   from './utils';
+import { logRequest }            from './middleware';
+import channels                  from './routes/channels';
+import auth                      from './routes/auth';
+import { createRedisConnection } from './database/redis';
 
 const app = express();
 
@@ -22,6 +23,14 @@ app.use('/auth', auth);
 const server = http.Server(app);
 createSocketIO(server);
 
-server.listen(config.port, () => {
-    log(`Chat server listening at port ${config.port}`);
-});
+createRedisConnection()
+    .then(() => {
+        server.listen(config.port, () => {
+            log(`Chat server listening at port ${config.port}`);
+        });
+    })
+    .catch(e => {
+        log(e.message)
+        process.exit(-1);
+    });
+
