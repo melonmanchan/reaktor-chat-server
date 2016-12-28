@@ -44,14 +44,22 @@ function createSocketIO(server) {
                         return;
                     }
 
+                    socket.user.rooms.map((r) => {
+                        const date = new Date();
+                        socket.broadcast.to(r).emit('user:quit', { username: socket.user.username });
+                    });
+
                     sockets.splice(i, 1);
                 });
 
                 socket.on('message:post', (data) => {
+                    const date = new Date();
                     const channel = data.channel;
                     const message = data.message;
 
-                    socket.broadcast.to(channel).emit('message:post', { message: message, user: socket.user })
+                    if (socket.user.rooms.includes(channel)) {
+                        socket.broadcast.to(channel).emit('message:post', { message , user: socket.user, date});
+                    }
                 });
 
                 socket.user = { username };
