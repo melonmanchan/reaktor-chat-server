@@ -13,6 +13,14 @@ router.post('/register', (req, res, next) => {
         return res.status(400).json({ error: 'Missing parameter!' });
     }
 
+    if (name.length < 3 ) {
+        return res.status(400).json({ error: `The name ${name} is too short. (min 3. characters)`});
+    }
+
+    if (password.length < 6 ) {
+        return res.status(400).json({ error: `The password ${password} is too short. (min 6. characters)`});
+    }
+
     getUserByName(name)
         .then(existingUser => {
             if (existingUser) {
@@ -44,6 +52,10 @@ router.post('/login', (req, res, next) => {
 
     getUserByName(name)
         .then(foundUser => {
+            if (!foundUser) {
+                return Promise.reject({ message: 'User not found!'});
+            }
+
             return verifyUserPassword(foundUser.password, password);
         })
         .then(() => {
