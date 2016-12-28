@@ -1,7 +1,7 @@
 web:
   build: .
   ports:
-    - "8000:800"
+    - "8000:8000"
   env_file:
     - chat.env
   links:

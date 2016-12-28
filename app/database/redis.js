@@ -9,7 +9,7 @@ let client = null;
 
 function createRedisConnection() {
     return new Promise((resolve, reject) => {
-        client = redis.createClient(config.redis_post, config.redis_host);
+        client = redis.createClient({ port: config.redis_port, host: config.redis_host });
 
         client.on('ready', () => {
             resolve();
