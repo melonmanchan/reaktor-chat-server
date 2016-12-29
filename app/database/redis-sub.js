@@ -4,24 +4,35 @@ import { CHAT_CHANNEL } from '../utils/constants';
 let sub = null;
 
 const subEvents = {
-    [events.USER_JOINED]: subUserJoined,
-    [events.USER_QUIT]: subUserLeft,
+    [events.NEW_CONNECTION] : subUserDisconnected,
+    [events.DISCONNECT]     : subUserLoggedIn,
+    [events.USER_JOINED]    : subUserJoinedChannel,
+    [events.USER_LEFT]      : subUserLeftChannel,
 };
 
-function subUserLeft(user) {
-    console.log(payload);
+function subUserDisconnected(user) {
+    // TODO
 }
 
-function subUserJoined(user) {
-    console.log(payload);
+function subUserLoggedIn(user) {
+    // TODO
 }
 
-function createChatSub(client) {
+function subUserJoinedChannel(data) {
+    // TODO
+}
+
+function subUserLeftChannel(data) {
+    // TODO
+}
+
+function createRedisSub(client) {
     sub = client.duplicate();
 
     sub.on('message', (channel, message) => {
         const payload = JSON.parse(message);
 
+        console.log('Event ',  payload);
         if (subEvents[payload.type]) {
             subEvents[payload.type](payload.data);
         }
@@ -30,4 +41,4 @@ function createChatSub(client) {
     sub.subscribe(CHAT_CHANNEL);
 }
 
-export { createChatSub };
+export { createRedisSub };

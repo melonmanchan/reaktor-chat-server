@@ -4,7 +4,7 @@ import socketioRedis from 'socket.io-redis';
 import EVENT_TYPES                                                                      from './eventtypes';
 import config                                                                           from '../config/config';
 import { log, LOG_TYPES }                                                               from '../utils';
-import { pubUserJoined }                                                                  from '../database/redis-pub';
+import { pubUserLoggedIn }                                                                from '../database/redis-pub';
 import { validateSocketJWT, getSocketByUsername, disconnectSocket, bindEventsToSocket } from './socketutil';
 
 const sockets = [];
@@ -35,7 +35,7 @@ function createSocketIO(server) {
 
                 const loggedInUser = { username, rooms: [] };
 
-                pubUserJoined(loggedInUser);
+                pubUserLoggedIn(loggedInUser);
 
                 socket.user = loggedInUser;
                 sockets.push(socket);

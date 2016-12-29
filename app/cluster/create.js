@@ -33,7 +33,7 @@ function createClusterServer(app) {
         }
 
         const server = net.createServer({ pauseOnConnect: true }, (connection) => {
-            const worker = workers[getWorkerIndex(connection.remoteAddress, config.processes)];
+            const worker = workers[getWorkerIndex(connection.remoteAddress, config.processes - 1)];
             worker.send('sticky-session:connection', connection);
         }).listen(config.port, () => {
             log(`Master running at port ${config.port}`)

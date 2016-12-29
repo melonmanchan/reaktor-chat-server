@@ -3,20 +3,33 @@ import { CHAT_CHANNEL } from '../utils/constants';
 
 let pub = null;
 
-function publishToChatChannel(data, type) {
+function publishToRedisChannel(data, type) {
     pub.publish(CHAT_CHANNEL, JSON.stringify({ data, type }));
 }
 
-function pubUserLeft(user) {
-    publishToChatChannel(user, events.USER_LEFT );
+// User socket disconencted from the server
+function pubUserDisconnected(user) {
+    publishToRedisChannel(user, events.DISCONNECT);
 }
 
-function pubUserJoined(user) {
-    publishToChatChannel(user, events.USER_JOINED);
+// User has logged in succesfully and is connected
+function pubUserLoggedIn(user) {
+    publishToRedisChannel(user, events.NEW_CONNECTION);
 }
 
-function createChatPub(client) {
+// User has joined a channel
+function pubUserJoinedChannel(user) {
+    publishToRedisChannel(user, events.USER_JOINED);
+}
+
+// User has left a channel
+function pubUserLeftChannel(user) {
+    publishToRedisChannel(user, events.USER_LEFT);
+}
+
+function createRedisPub(client) {
     pub = client.duplicate();
 }
 
-export { createChatPub, pubUserLeft, pubUserJoined };
+export { createRedisPub, pubUserDisconnected, pubUserLoggedIn,
+    pubUserJoinedChannel, pubUserLeftChannel };
