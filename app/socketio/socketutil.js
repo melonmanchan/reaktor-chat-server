@@ -1,11 +1,12 @@
-import { sockets, io } from './create';
+import EVENT_TYPES  from './eventtypes';
 import events from './eventtypes';
 import pub from '../database/redis-pub'
-import { pubUserLeft, pubUserJoinedChannel,
-    pubUserDisconnected, pubUserLeftChannel } from '../database/redis-pub';
-import { decodeJWT, log, LOG_TYPES }   from '../utils';
-import { ChatStore } from '../store';
-import EVENT_TYPES  from './eventtypes';
+
+import { ChatStore }                                                                  from '../store';
+import { addMessageToChannel }                                                        from '../database/channel';
+import { decodeJWT, log, LOG_TYPES }                                                  from '../utils';
+import { pubUserLeft, pubUserJoinedChannel, pubUserDisconnected, pubUserLeftChannel } from '../database/redis-pub';
+import { sockets, io }                                                                from './create';
 
 function validateSocketJWT(socket) {
     return new Promise((resolve, reject) => {
@@ -74,7 +75,9 @@ function bindEventsToSocket(socket) {
         }
 
         if (user.channels.includes(channel)) {
-            socket.broadcast.to(channel).emit(EVENT_TYPES.MESSAGE_POST, { message , user: user, date});
+            const payload = { message, user: user.username, date };
+            socket.broadcast.to(channel).emit(EVENT_TYPES.MESSAGE_POST, payload);
+            addMessageToChannel(channel, payload);
         }
     });
 
