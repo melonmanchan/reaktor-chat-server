@@ -28,7 +28,7 @@ function getWorkerIndex(ip, len) {
 
 function createClusterServer(app) {
     if (cluster.isMaster) {
-        for (let i = 0; i < config.processes; i++) {
+        for (let i = 0; i < config.processes - 1; i++) {
             spawn(i);
         }
 
