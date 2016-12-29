@@ -10,7 +10,7 @@ function spawn(index) {
     workers[index] = cluster.fork()
     workers[index].on('exit', (code, sig) => {
         log(`Respawning worker ${index}`);
-        spawn(index)
+        spawn(index);
     });
 }
 

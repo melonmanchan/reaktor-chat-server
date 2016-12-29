@@ -1,5 +1,7 @@
 import { sockets, io } from './create';
+import { pubUserLeft } from '../database/redis-pub';
 import { decodeJWT, log, LOG_TYPES }   from '../utils';
+
 import EVENT_TYPES  from './eventtypes';
 
 function validateSocketJWT(socket) {
@@ -73,6 +75,10 @@ function bindEventsToSocket(socket) {
         const date = new Date();
         const channel = data.channel;
         const message = data.message;
+
+        if (!channel && !message) {
+            return;
+        }
 
         if (socket.user.rooms.includes(channel)) {
             socket.broadcast.to(channel).emit(EVENT_TYPES.MESSAGE_POST, { message , user: socket.user, date});

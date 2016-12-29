@@ -1,9 +1,10 @@
 import socketio      from 'socket.io';
 import socketioRedis from 'socket.io-redis';
 
-import { log, LOG_TYPES } from '../utils';
-import EVENT_TYPES        from './eventtypes';
-import config from '../config/config';
+import EVENT_TYPES                                                                      from './eventtypes';
+import config                                                                           from '../config/config';
+import { log, LOG_TYPES }                                                               from '../utils';
+import { pubUserJoined }                                                                  from '../database/redis-pub';
 import { validateSocketJWT, getSocketByUsername, disconnectSocket, bindEventsToSocket } from './socketutil';
 
 const sockets = [];
@@ -32,12 +33,16 @@ function createSocketIO(server) {
 
                 bindEventsToSocket(socket);
 
-                socket.user = { username };
-                socket.user.rooms = [];
+                const loggedInUser = { username, rooms: [] };
+
+                pubUserJoined(loggedInUser);
+
+                socket.user = loggedInUser;
                 sockets.push(socket);
                 socket.emit(EVENT_TYPES.LOGGED_IN, {});
             })
             .catch(e => {
+                console.log(e)
                 disconnectSocket(socket, EVENT_TYPES.BAD_JWT);
             })
     });

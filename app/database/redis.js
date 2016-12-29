@@ -1,4 +1,7 @@
-import { config } from '../config';
+import { config }          from '../config';
+import { createChatSub } from './redis-sub';
+import { createChatPub } from './redis-pub';
+
 import redis from 'redis';
 import bluebird from 'bluebird'
 
@@ -18,6 +21,9 @@ function createRedisConnection() {
         client.on('error', (err) => {
             reject(err);
         });
+
+        createChatSub(client);
+        createChatPub(client);
     });
 }
 
