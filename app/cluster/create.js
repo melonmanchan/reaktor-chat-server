@@ -28,12 +28,12 @@ function getWorkerIndex(ip, len) {
 
 function createClusterServer(app) {
     if (cluster.isMaster) {
-        for (let i = 0; i < config.processes - 1; i++) {
+        for (let i = 0; i < config.workers_count; i++) {
             spawn(i);
         }
 
         const server = net.createServer({ pauseOnConnect: true }, (connection) => {
-            const worker = workers[getWorkerIndex(connection.remoteAddress, config.processes - 1)];
+            const worker = workers[getWorkerIndex(connection.remoteAddress, config.workers_count)];
             worker.send('sticky-session:connection', connection);
         }).listen(config.port, () => {
             log(`Master running at port ${config.port}`)
