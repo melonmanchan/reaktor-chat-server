@@ -1,11 +1,13 @@
 import socketio      from 'socket.io';
 import socketioRedis from 'socket.io-redis';
 
+import { ChatStore } from '../store';
 import EVENT_TYPES                                                                      from './eventtypes';
 import config                                                                           from '../config/config';
 import { log, LOG_TYPES }                                                               from '../utils';
 import { pubUserLoggedIn }                                                                from '../database/redis-pub';
-import { validateSocketJWT, getSocketByUsername, disconnectSocket, bindEventsToSocket } from './socketutil';
+import { validateSocketJWT, getSocketByUsername,
+    disconnectSocket, bindEventsToSocket } from './socketutil';
 
 const sockets = [];
 let io;
@@ -15,12 +17,11 @@ function createSocketIO(server) {
     io.adapter(socketioRedis({ port: config.redis_port, host: config.redis_host}));
 
     io.on(EVENT_TYPES.NEW_CONNECTION, (socket) => {
-
         validateSocketJWT(socket)
             .then(user => {
                 const username = user.name;
 
-                const existing = getSocketByUsername(username)
+                const existing = ChatStore.getUserByName(username)
 
                 if (existing) {
                     log('Name is taken!', LOG_TYPES.warn);
@@ -37,8 +38,7 @@ function createSocketIO(server) {
 
                 pubUserLoggedIn(loggedInUser);
 
-                socket.user = loggedInUser;
-                sockets.push(socket);
+                ChatStore.addSocket(socket, username);
                 socket.emit(EVENT_TYPES.LOGGED_IN, {});
             })
             .catch(e => {

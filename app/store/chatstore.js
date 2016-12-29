@@ -1,8 +1,13 @@
-const ChatStore = {
-    activeUsers: [],
+import findKey from 'lodash.findKey';
 
+const ChatStore = {
+    _activeUsers: [],
+
+    _connectedSockets : {},
+
+    // Users
     getUserByName(username) {
-        return this.activeUsers.find(user => { return user.username === username; });
+        return this._activeUsers.find(user => { return user.username === username; });
     },
 
     removeUser(user) {
@@ -12,7 +17,7 @@ const ChatStore = {
             return false;
         }
 
-        this.activeUsers.splice(this.activeUsers.indexOf(userToRemove), 1);
+        this._activeUsers.splice(this._activeUsers.indexOf(userToRemove), 1);
         return true;
     },
 
@@ -23,7 +28,7 @@ const ChatStore = {
             return false;
         }
 
-        this.activeUsers.push(user);
+        this._activeUsers.push(user);
 
         return true;
     },
@@ -35,9 +40,9 @@ const ChatStore = {
             return false;
         }
 
-        const ind = this.activeUsers.indexOf(userToAdd);
+        const ind = this._activeUsers.indexOf(userToAdd);
 
-        this.activeUsers[ind].channels.push(channelKey);
+        this._activeUsers[ind].channels.push(channelKey);
 
         return true;
     },
@@ -49,21 +54,49 @@ const ChatStore = {
             return false;
         }
 
-        const userIndex = this.activeUsers.indexOf(userToRemove);
+        const userIndex = this._activeUsers.indexOf(userToRemove);
         const channelIndex = user.channels.indexOf(channelKey);
 
         if (channelIndex === -1) {
             return false;
         }
 
-        this.activeUsers[ind].channels.splice(channelIndex, 1);
+        this._activeUsers[ind].channels.splice(channelIndex, 1);
 
         return true;
     },
 
     getUsersInChannel(channelKey) {
-        return this.activeUsers.filter(u => { return u.channels.includes(channelKey)});
+        return this._activeUsers.filter(u => { return u.channels.includes(channelKey)});
     },
+
+    // Sockets
+    addSocket(socket, username) {
+        this._connectedSockets[username] = socket;
+    },
+
+    deleteSocketByName(username) {
+        delete this._connectedSockets[username];
+    },
+
+    deleteSocket(socket) {
+        const name = findKey(this._connectedSockets, socket)
+        this.deleteSocketByName(name);
+    },
+
+    getUserBySocket(socket) {
+        const name = findKey(this._connectedSockets, socket);
+
+        if (!name) {
+            return;
+        }
+
+        return this.getUserByName(name);
+    },
+
+    getSocketByUsername(username) {
+        return this._connectedSockets[username];
+    }
 };
 
 export default ChatStore;

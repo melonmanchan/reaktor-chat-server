@@ -33,8 +33,6 @@ function createRedisSub(client) {
     sub.on('message', (channel, message) => {
         const payload = JSON.parse(message);
 
-        console.log('Event ',  payload);
-
         if (subEvents[payload.type]) {
             subEvents[payload.type](payload.data);
         }
