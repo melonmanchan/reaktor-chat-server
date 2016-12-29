@@ -1,7 +1,8 @@
 import { sockets, io } from './create';
 import events from './eventtypes';
 import pub from '../database/redis-pub'
-import { pubUserLeft, pubUserJoinedChannel, pubUserDisconnected } from '../database/redis-pub';
+import { pubUserLeft, pubUserJoinedChannel,
+    pubUserDisconnected, pubUserLeftChannel } from '../database/redis-pub';
 import { decodeJWT, log, LOG_TYPES }   from '../utils';
 
 import EVENT_TYPES  from './eventtypes';
@@ -47,7 +48,7 @@ function getSocketByUsername(name) {
     return socket;
 }
 
-function joinChannel(username, roomKey) {
+function joinChannel(username, channelKey) {
     const socket = getSocketByUsername(username);
     const i = sockets.indexOf(socket);
 
@@ -55,10 +56,10 @@ function joinChannel(username, roomKey) {
         return;
     }
 
-    sockets[i].join(roomKey)
-    sockets[i].user.rooms.push(roomKey);
-    io.to(roomKey).emit('user:joined', { username });
-    pubUserJoinedChannel(sockets[i].user);
+    sockets[i].join(channelKey)
+    io.to(channelKey).emit(events.USER_JOINED, { username });
+
+    pubUserJoinedChannel({ channelKey, user: sockets[i].user });
 }
 
 
@@ -66,9 +67,9 @@ function bindEventsToSocket(socket) {
     socket.on(EVENT_TYPES.DISCONNECT, () => {
         log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
-        socket.user.rooms.map((r) => {
+        socket.user.channels.map((c) => {
             const date = new Date();
-            socket.broadcast.to(r).emit(events.USER_QUIT, { username: socket.user.username });
+            socket.broadcast.to(c).emit(events.USER_QUIT, { username: socket.user.username });
         });
 
         disconnectSocket(socket);
@@ -84,7 +85,7 @@ function bindEventsToSocket(socket) {
             return;
         }
 
-        if (socket.user.rooms.includes(channel)) {
+        if (socket.user.channels.includes(channel)) {
             socket.broadcast.to(channel).emit(EVENT_TYPES.MESSAGE_POST, { message , user: socket.user, date});
         }
     });

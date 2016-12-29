@@ -1,29 +1,30 @@
 import events from '../socketio/eventtypes';
+import { ChatStore } from '../store';
 import { CHAT_CHANNEL } from '../utils/constants';
 
 let sub = null;
 
 const subEvents = {
-    [events.NEW_CONNECTION] : subUserDisconnected,
-    [events.DISCONNECT]     : subUserLoggedIn,
+    [events.NEW_CONNECTION] : subUserLoggedIn,
+    [events.DISCONNECT]     : subUserDisconnected,
     [events.USER_JOINED]    : subUserJoinedChannel,
     [events.USER_LEFT]      : subUserLeftChannel,
 };
 
 function subUserDisconnected(user) {
-    // TODO
+    ChatStore.removeUser(user);
 }
 
 function subUserLoggedIn(user) {
-    // TODO
+    ChatStore.addUser(user);
 }
 
 function subUserJoinedChannel(data) {
-    // TODO
+    ChatStore.addChannelToUser(data.channelKey, data.user);
 }
 
 function subUserLeftChannel(data) {
-    // TODO
+    ChatStore.removeChannelFromUser(data.channelKey, data.user);
 }
 
 function createRedisSub(client) {
@@ -33,6 +34,7 @@ function createRedisSub(client) {
         const payload = JSON.parse(message);
 
         console.log('Event ',  payload);
+
         if (subEvents[payload.type]) {
             subEvents[payload.type](payload.data);
         }

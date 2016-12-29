@@ -33,7 +33,7 @@ function createSocketIO(server) {
 
                 bindEventsToSocket(socket);
 
-                const loggedInUser = { username, rooms: [] };
+                const loggedInUser = { username, channels: [] };
 
                 pubUserLoggedIn(loggedInUser);
 

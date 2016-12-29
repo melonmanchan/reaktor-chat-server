@@ -18,13 +18,13 @@ function pubUserLoggedIn(user) {
 }
 
 // User has joined a channel
-function pubUserJoinedChannel(user) {
-    publishToRedisChannel(user, events.USER_JOINED);
+function pubUserJoinedChannel(data) {
+    publishToRedisChannel(data, events.USER_JOINED);
 }
 
 // User has left a channel
-function pubUserLeftChannel(user) {
-    publishToRedisChannel(user, events.USER_LEFT);
+function pubUserLeftChannel(data) {
+    publishToRedisChannel(data, events.USER_LEFT);
 }
 
 function createRedisPub(client) {
