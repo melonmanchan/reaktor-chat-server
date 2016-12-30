@@ -14,7 +14,7 @@ import auth                      from './routes/auth';
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:8080', credentials: true }));
+app.use(cors());
 app.use(logRequest);
 app.use(parser.json({limit: '50mb'}));
 
