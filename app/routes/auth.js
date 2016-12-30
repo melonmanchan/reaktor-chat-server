@@ -33,8 +33,8 @@ router.post('/register', (req, res, next) => {
             delete user.password;
             return signUserWithToken(user);
         })
-        .then(token => {
-            res.status(201).json({ token });
+        .then(rsults => {
+            res.status(200).json({ token: results.token, expiresIn: results.expiresIn });
         })
         .catch(e => {
             res.status(500).json({ error: e.message });
@@ -61,8 +61,8 @@ router.post('/login', (req, res, next) => {
         .then(() => {
             return signUserWithToken({ name: name });
         })
-        .then(token => {
-            res.status(200).json({ token });
+        .then(results => {
+            res.status(200).json({ token: results.token, expiresIn: results.expiresIn });
         })
         .catch(e => {
             res.status(500).json({ error: e.message });

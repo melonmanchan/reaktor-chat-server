@@ -15,13 +15,17 @@ function decodeJWT(token) {
 
 function signUserWithToken(user) {
     return new Promise(function (resolve, reject) {
+        // Token expires in one week
+        const currentDate = Math.floor(Date.now() / 1000);
+        const expiresIn = currentDate + 604800;
+
         jwt.sign(user, config.jwt_secret, {
-            expiresIn: '7 days'
+            expiresIn: expiresIn,
         }, (err, token) => {
             if (err) {
                 reject(err)
             } else {
-                resolve(token)
+                resolve({ token, expiresIn: expiresIn * 1000 })
             }
         })
     })
