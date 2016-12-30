@@ -13,6 +13,14 @@ router.post('/register', (req, res, next) => {
         return res.status(400).json({ error: 'Missing parameter!' });
     }
 
+    if (name === 'System' || name === 'You') {
+        return res.status(400).json({ error: `That name is not allowed`});
+    }
+
+    if (!name.match(/^[A-Za-z0-9]+$/)) {
+        return res.status(400).json({ error: `Name must be numbers or letter a-z only`});
+    }
+
     if (name.length < 3 ) {
         return res.status(400).json({ error: `The name ${name} is too short. (min 3. characters)`});
     }
@@ -33,7 +41,7 @@ router.post('/register', (req, res, next) => {
             delete user.password;
             return signUserWithToken(user);
         })
-        .then(rsults => {
+        .then(results => {
             res.status(200).json({ token: results.token, expiresIn: results.expiresIn });
         })
         .catch(e => {
