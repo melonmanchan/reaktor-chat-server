@@ -1,13 +1,13 @@
 import express from 'express';
 
-import channels                from '../channels';
+import { defaultChannels, getLatestMessages }  from '../database/channel';
 import { resolveJWT }          from '../middleware';
 import { getSocketByUsername, joinChannel } from '../socketio';
 
 const router = express.Router();
 
 router.get('/', resolveJWT, (req, res, next) => {
-    return res.status(200).json({ channels });
+    return res.status(200).json({ channels: defaultChannels });
 });
 
 router.post('/:key/join', resolveJWT, (req, res, next) => {
@@ -19,8 +19,10 @@ router.post('/:key/join', resolveJWT, (req, res, next) => {
     }
 
     joinChannel(req.user.name, key);
-
-    return res.status(200).json({ key });
+    getLatestMessages(key)
+        .then(messages => {
+            res.status(200).json({ key, messages });
+    });
 });
 
 
