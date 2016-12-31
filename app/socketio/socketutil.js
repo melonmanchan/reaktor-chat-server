@@ -89,6 +89,22 @@ function bindEventsToSocket(socket) {
         }
     });
 
+    socket.on(events.USER_STATUS_CHANGE, (data) => {
+        const user = ChatStore.getUserBySocket(socket);
+        const channel = data.channel;
+        const status = data.status
+
+        if (!user || !channel || !status) {
+            return;
+        }
+
+        if (user.channels.includes(channel)) {
+            const payload = { channel, user: user.username, status };
+            socket.broadcast.to(channel).emit(events.USER_STATUS_CHANGE, payload);
+        }
+    });
+
+
     socket.on(EVENT_TYPES.MESSAGE_POST, (data) => {
         const user = ChatStore.getUserBySocket(socket);
         const date = new Date();
