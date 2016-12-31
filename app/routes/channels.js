@@ -1,13 +1,16 @@
 import express from 'express';
 
-import { defaultChannels, getLatestMessages, getChannelMessagesByRange }  from '../database/channel';
+import { getLatestMessages, getPublicChannels, getChannelMessagesByRange }  from '../database/channel';
 import { resolveJWT }          from '../middleware';
 import { getSocketByUsername, joinChannel } from '../socketio';
 
 const router = express.Router();
 
 router.get('/', resolveJWT, (req, res, next) => {
-    return res.status(200).json({ channels: defaultChannels });
+    getPublicChannels()
+        .then((channels) => {
+            res.status(200).json({ channels });
+        });
 });
 
 router.get('/:key/messages', resolveJWT, (req, res, next) => {
