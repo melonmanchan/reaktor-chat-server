@@ -1,4 +1,6 @@
-import jwt    from 'jsonwebtoken'
+import Promise from 'bluebird'
+import jwt     from 'jsonwebtoken'
+
 import { config } from '../config';
 
 function decodeJWT(token) {

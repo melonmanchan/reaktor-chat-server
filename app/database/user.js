@@ -1,3 +1,5 @@
+import Promise from 'bluebird'
+
 import { client } from './redis';
 import { generateHashSync, validateString } from '../utils/bcrypt';
 import crypt from '../utils/bcrypt';

@@ -1,4 +1,5 @@
-import bcrypt       from 'bcryptjs';
+import Promise from 'bluebird'
+import bcrypt  from 'bcryptjs';
 
 function generateHashSync(str) {
     if (!str) {

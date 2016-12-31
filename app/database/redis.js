@@ -3,10 +3,10 @@ import { createRedisSub } from './redis-sub';
 import { createRedisPub } from './redis-pub';
 
 import redis from 'redis';
-import bluebird from 'bluebird'
+import Promise from 'bluebird'
 
-bluebird.promisifyAll(redis.RedisClient.prototype)
-bluebird.promisifyAll(redis.Multi.prototype)
+Promise.promisifyAll(redis.RedisClient.prototype)
+Promise.promisifyAll(redis.Multi.prototype)
 
 let client = null;
 

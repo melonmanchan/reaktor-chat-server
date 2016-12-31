@@ -1,3 +1,5 @@
+import Promise from 'bluebird'
+
 import EVENT_TYPES  from './eventtypes';
 import events from './eventtypes';
 import pub from '../database/redis-pub'
