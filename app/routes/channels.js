@@ -1,8 +1,9 @@
 import express from 'express';
 
-import { getLatestMessages, getPublicChannels, getChannelMessagesByRange }  from '../database/channel';
-import { resolveJWT }          from '../middleware';
-import { getSocketByUsername, joinChannel } from '../socketio';
+import { ChatStore }                                                       from '../store'
+import { getLatestMessages, getPublicChannels, getChannelMessagesByRange } from '../database/channel';
+import { getSocketByUsername, joinChannel }                                from '../socketio';
+import { resolveJWT }                                                      from '../middleware';
 
 const router = express.Router();
 
@@ -44,10 +45,11 @@ router.post('/:key/join', resolveJWT, (req, res, next) => {
     joinChannel(req.user.name, key);
     getLatestMessages(key)
         .then(messages => {
-            res.status(200).json({ key, messages });
+            const onlineUsers = ChatStore.getUsersInChannel(key);
+
+            res.status(200).json({ key, messages, onlineUsers });
         })
         .catch(e => {
-            console.log(e)
             res.status(500).json({ error: e.message });
         })
 });

@@ -61,13 +61,21 @@ const ChatStore = {
             return false;
         }
 
-        this._activeUsers[ind].channels.splice(channelIndex, 1);
+        this._activeUsers[userIndex].channels.splice(channelIndex, 1);
 
         return true;
     },
 
     getUsersInChannel(channelKey) {
-        return this._activeUsers.filter(u => { return u.channels.includes(channelKey)});
+        // Filter out channels they're part of first, since this
+        // might be considered as sensitive information!
+        return this._activeUsers.reduce((arr, user) => {
+            if (user.channels.includes(channelKey)) {
+                arr.push({ username: user.username });
+            }
+
+            return arr;
+        }, []);
     },
 
     // Sockets

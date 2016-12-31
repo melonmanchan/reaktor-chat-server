@@ -38,7 +38,6 @@ const messageModel = {
     date: null,
 };
 
-
 function addMessageToChannel(channelKey, message) {
     return client.rpushAsync(PREFIX_CHANNEL_MSG + channelKey, JSON.stringify(message));
 }

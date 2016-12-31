@@ -6,6 +6,7 @@ export default {
     LOGGED_IN      : 'logged_in',
 
     USER_JOINED    : 'user:joined',
+    USER_LEFT      : 'user:left',
     USER_QUIT      : 'user:quit',
 
     MESSAGE_POST   : 'message:post',

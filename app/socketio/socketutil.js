@@ -1,14 +1,14 @@
 import Promise from 'bluebird'
 
-import EVENT_TYPES  from './eventtypes';
-import events from './eventtypes';
-import pub from '../database/redis-pub'
+import EVENT_TYPES from './eventtypes';
+import events      from './eventtypes';
+import pub         from '../database/redis-pub'
 
-import { ChatStore }                                                                  from '../store';
-import { addMessageToChannel }                                                        from '../database/channel';
-import { decodeJWT, log, LOG_TYPES }                                                  from '../utils';
-import { pubUserLeft, pubUserJoinedChannel, pubUserDisconnected, pubUserLeftChannel } from '../database/redis-pub';
-import { sockets, io }                                                                from './create';
+import { ChatStore }                                                     from '../store';
+import { addMessageToChannel }                                           from '../database/channel';
+import { decodeJWT, log, LOG_TYPES }                                     from '../utils';
+import { pubUserJoinedChannel, pubUserDisconnected, pubUserLeftChannel } from '../database/redis-pub';
+import { sockets, io }                                                   from './create';
 
 function validateSocketJWT(socket) {
     return new Promise((resolve, reject) => {
@@ -57,13 +57,36 @@ function bindEventsToSocket(socket) {
 
         const user = ChatStore.getUserBySocket(socket);
 
-        user.channels.map((c) => {
-            const date = new Date();
-            socket.broadcast.to(c).emit(events.USER_QUIT, { username: user.username });
-        });
+        if (!user) {
+            return;
+        }
+
+        if (user.channels) {
+            user.channels.map((c) => {
+                const date = new Date();
+                socket.broadcast.to(c).emit(events.USER_QUIT, { username: user.username });
+            });
+        }
 
         disconnectSocket(socket);
         pubUserDisconnected(user);
+    });
+
+    socket.on(events.USER_LEFT, (data) => {
+        const user = ChatStore.getUserBySocket(socket);
+        const channel = data.channel;
+
+        if (!user || !channel || !user.channels) {
+            return;
+        }
+
+        if (user.channels.includes(channel)) {
+            const date = new Date();
+            const payload = { channel, user: user.username, date };
+
+            socket.broadcast.to(channel).emit(events.USER_LEFT, payload);
+            pubUserLeftChannel({ user, channelKey: channel });
+        }
     });
 
     socket.on(EVENT_TYPES.MESSAGE_POST, (data) => {
@@ -72,11 +95,11 @@ function bindEventsToSocket(socket) {
         const channel = data.channel;
         const message = data.message;
 
-        if (!channel && !message) {
+        if (!channel || !message || !user) {
             return;
         }
 
-        if (user.channels.includes(channel)) {
+        if (user.channels && user.channels.includes(channel)) {
             const payload = { message, user: user.username, date };
             socket.broadcast.to(channel).emit(EVENT_TYPES.MESSAGE_POST, payload);
             addMessageToChannel(channel, payload);
