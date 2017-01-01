@@ -1,6 +1,7 @@
 # Reaktor chat server
 
-Backend of a simple, RESTful scalable Socket.io/redis/express application.
+Backend of a simple, quick and scalable RESTful Socket.io/redis/express
+application.
 
 See frontend here: https://github.com/melonmanchan/reaktor-chat-client
 
@@ -28,7 +29,7 @@ causes the rest of the cluster to update their state.
 Further reading on clustering socket.io, which this application attempts to
 expand upon: https://github.com/elad/node-cluster-socket.io
 
-## Running (development)
+## Running in development
 First off, install Yarn: https://yarnpkg.com/ Then, clone this repository and
 install the required packages
 
@@ -44,17 +45,23 @@ credentials, and exchange messages between workers and clusters.
 https://redis.io/download
 
 Afterwards, launch Redis on localhost:6379 and run `npm start` to start the
-server. See the configuration section below for various tuning options.
+server. See the configuration section below for various tuning options. Just one
+worker cluster is more than enough for running in development
 
-## Running (production)
+```sh
+    WORKERS=1 npm start
+```
+
+## Running in production
 Docker, orchestrated by Docker Compose, is the recommended way of running this
-application in production. Simply install those:
+application in production. Simply install those two:
 
 https://docs.docker.com/engine/installation/
+
 https://docs.docker.com/compose/
 
 and change some of the default environment variables, such as the JWT token, in
-the file chat.env. Afterwards, run
+the file chat.env. Afterwards, run:
 
 ```sh
     docker-compose up
