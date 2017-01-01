@@ -5,38 +5,52 @@ import { client }     from './redis';
 
 const defaultChannels = [
     {
-        name: 'Channel 1',
-        key:  'channel1'
+        name: 'General',
+        key:  'general'
     },
     {
-        name: 'Channel 2',
-        key:  'channel2'
+        name: 'Programming',
+        key:  'programming'
     },
     {
-        name: 'Channel 3',
-        key:  'channel3'
+        name: 'Random',
+        key:  'random'
     },
 ];
 
 const PREFIX_CHANNEL = 'channel__';
 const PREFIX_CHANNEL_MSG = 'channel_msg__';
 
+const PUBLIC = '_public';
+const PRIVATE = '_private';
+
 function getPublicChannels () {
     return new Promise((resolve, reject) => {
-        const channelsWithUser = defaultChannels.map((c) => {
-            c.onlineCount = ChatStore.getUsersInChannel(c.key).length;
-            return c;
-        });
+        client.lrangeAsync(PREFIX_CHANNEL + PUBLIC, 0, -1)
+            .then((publicChannels) => {
+                const asObjects = publicChannels.map((o) => { return JSON.parse(o); });
 
-        resolve(channelsWithUser);
-    })
+                const allPublicChannels = defaultChannels.concat(asObjects);
+
+                const channelsWithUser = allPublicChannels.map((c) => {
+                    c.onlineCount = ChatStore.getUsersInChannel(c.key).length;
+                    return c;
+                });
+
+                resolve(channelsWithUser);
+            })
+            .catch((e) => {
+                reject(e);
+            });
+    });
 }
 
-const messageModel = {
-    username: '',
-    message: '',
-    date: null,
-};
+function createChannel(channelName, channelKey, isPublic = true) {
+    const prefix = (isPublic ? PUBLIC : PRIVATE );
+
+    return client.rpushAsync(PREFIX_CHANNEL + prefix, JSON.stringify({
+        key: channelKey, name: channelName }));
+}
 
 function addMessageToChannel(channelKey, message) {
     return client.rpushAsync(PREFIX_CHANNEL_MSG + channelKey, JSON.stringify(message));

@@ -1,9 +1,10 @@
 import express from 'express';
 
 import { ChatStore }                                                       from '../store'
-import { getLatestMessages, getPublicChannels, getChannelMessagesByRange } from '../database/channel';
+import { getLatestMessages, getPublicChannels, createChannel, getChannelMessagesByRange } from '../database/channel';
 import { getSocketByUsername, joinChannel }                                from '../socketio';
 import { resolveJWT }                                                      from '../middleware';
+import { randomBase64 }                                                    from '../utils';
 
 const router = express.Router();
 
@@ -11,6 +12,29 @@ router.get('/', resolveJWT, (req, res, next) => {
     getPublicChannels()
         .then((channels) => {
             res.status(200).json({ channels });
+        });
+});
+
+router.post('/', resolveJWT, (req, res, next) => {
+    const name = req.params.name;
+    const isPublic = req.params.isPublic;
+
+    if (!name || (typeof isPublic === 'undefined')) {
+        return res.status(400).json({ error: 'Missing parameters!' });
+    }
+
+    let newKey = null;
+
+    randomBase64()
+        .then((randomKey) => {
+            newKey = randomKey;
+            return createChannel(name, newKey, isPublic);
+        })
+        .then(() => {
+            res.status(201).json({ name: name, key: newKey, onlineUsers: 0});
+        })
+        .catch((e) => {
+            res.status(500).json({ error: e.message });
         });
 });
 
@@ -29,9 +53,8 @@ router.get('/:key/messages', resolveJWT, (req, res, next) => {
             res.status(200).json({ messages });
         })
         .catch(e => {
-            console.log(e)
             res.status(500).json({ error: e.message });
-        })
+        });
 });
 
 router.post('/:key/join', resolveJWT, (req, res, next) => {
