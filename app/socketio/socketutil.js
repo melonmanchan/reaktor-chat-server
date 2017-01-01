@@ -43,7 +43,7 @@ function joinChannel(username, channelKey) {
         return;
     }
 
-    socket.join(channelKey)
+    socket.join(channelKey);
     io.to(channelKey).emit(events.USER_JOINED, { username });
     pubUserJoinedChannel({ channelKey, user: ChatStore.getUserByName(username) });
 }
@@ -83,6 +83,7 @@ function bindEventsToSocket(socket) {
             const payload = { channel, user: user.username, date };
 
             socket.broadcast.to(channel).emit(events.USER_LEFT, payload);
+            socket.leave(channel);
             pubUserLeftChannel({ user, channelKey: channel });
         }
     });
