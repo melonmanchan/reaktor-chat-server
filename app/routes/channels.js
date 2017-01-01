@@ -17,10 +17,9 @@ router.get('/', resolveJWT, (req, res, next) => {
 
 router.post('/', resolveJWT, (req, res, next) => {
     const name = req.body.name;
-    const isPublic = req.body.isPublic;
 
-    if (!name || (typeof isPublic === 'undefined')) {
-        return res.status(400).json({ error: 'Missing parameters!' });
+    if (!name) {
+        return res.status(400).json({ error: 'Missing channel name!' });
     }
 
     let newKey = null;
@@ -28,7 +27,7 @@ router.post('/', resolveJWT, (req, res, next) => {
     randomBase64()
         .then((randomKey) => {
             newKey = randomKey;
-            return createChannel(name, newKey, isPublic);
+            return createChannel(name, newKey);
         })
         .then(() => {
             res.status(201).json({ name: name, key: newKey, onlineUsers: 0});

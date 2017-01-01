@@ -21,12 +21,9 @@ const defaultChannels = [
 const PREFIX_CHANNEL = 'channel__';
 const PREFIX_CHANNEL_MSG = 'channel_msg__';
 
-const PUBLIC = '_public';
-const PRIVATE = '_private';
-
 function getPublicChannels () {
     return new Promise((resolve, reject) => {
-        client.lrangeAsync(PREFIX_CHANNEL + PUBLIC, 0, -1)
+        client.lrangeAsync(PREFIX_CHANNEL, 0, -1)
             .then((publicChannels) => {
                 const asObjects = publicChannels.map((o) => { return JSON.parse(o); });
 
@@ -45,10 +42,8 @@ function getPublicChannels () {
     });
 }
 
-function createChannel(channelName, channelKey, isPublic = true) {
-    const prefix = (isPublic ? PUBLIC : PRIVATE );
-
-    return client.rpushAsync(PREFIX_CHANNEL + prefix, JSON.stringify({
+function createChannel(channelName, channelKey) {
+    return client.rpushAsync(PREFIX_CHANNEL, JSON.stringify({
         key: channelKey, name: channelName }));
 }
 
