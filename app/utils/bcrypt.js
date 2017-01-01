@@ -1,4 +1,4 @@
-import Promise from 'bluebird'
+import Promise from 'bluebird';
 import bcrypt  from 'bcryptjs';
 
 function generateHashSync(str) {
@@ -7,7 +7,7 @@ function generateHashSync(str) {
     }
 
     const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(str, salt)
+    const hash = bcrypt.hashSync(str, salt);
 
     return hash;
 }
@@ -21,7 +21,7 @@ function validateString(str, hash) {
                 resolve(response);
             }
         });
-    })
+    });
 }
 
 export default { generateHashSync, validateString };

@@ -32,7 +32,6 @@ createRedisConnection()
     }
 });
 
-
 if (!isMaster) {
     createSocketIO(server);
 }

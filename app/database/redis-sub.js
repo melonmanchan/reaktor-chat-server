@@ -1,9 +1,11 @@
 import cluster from 'cluster';
 
-import events from '../socketio/eventtypes';
-import { ChatStore } from '../store';
-import { CHAT_CHANNEL, SYNC_CHANNEL, SYNC_EVENT, NEEDS_SYNC } from '../utils/constants';
-import { pubRequestSync, pubSyncChatStore } from './redis-pub.js';
+import events     from '../socketio/eventtypes';
+import syncEvents from './synceventtypes';
+
+import { ChatStore }                        from '../store';
+import { CHAT_CHANNEL, SYNC_CHANNEL }       from './channeltypes';
+import { pubRequestSync, pubSyncChatStore } from './redis-pub';
 
 let sub = null;
 
@@ -16,7 +18,7 @@ const subEvents = {
 
 function requestSync() {
     sub.subscribe(SYNC_CHANNEL);
-    pubRequestSync()
+    pubRequestSync();
 }
 
 function respondToSyncRequest() {
@@ -29,7 +31,7 @@ function respondToSyncRequest() {
 function subSyncChatStore(data) {
     if (cluster.isWorker) {
         sub.unsubscribe(SYNC_CHANNEL);
-        ChatStore.unserializeStoreState(data)
+        ChatStore.unserializeStoreState(data);
     }
 }
 
@@ -63,10 +65,10 @@ function createRedisSub(client) {
     sub.subscribe(CHAT_CHANNEL);
 
     if (cluster.isWorker) {
-        subEvents[SYNC_EVENT] = subSyncChatStore;
+        subEvents[syncEvents.SYNC_EVENT] = subSyncChatStore;
     } else {
         sub.subscribe(SYNC_CHANNEL);
-        subEvents[NEEDS_SYNC] = respondToSyncRequest;
+        subEvents[syncEvents.NEEDS_SYNC] = respondToSyncRequest;
     }
 }
 

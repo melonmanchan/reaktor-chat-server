@@ -19,7 +19,7 @@ const ChatStore = {
     },
 
     getUserIndex(username) {
-        return this._activeUsers.findIndex(user => { return user.username === username })
+        return this._activeUsers.findIndex(user => { return user.username === username });
     },
 
     removeUser(user) {
@@ -98,7 +98,7 @@ const ChatStore = {
     },
 
     deleteSocket(socket) {
-        const name = findKey(this._connectedSockets, socket)
+        const name = findKey(this._connectedSockets, socket);
         this.deleteSocketByName(name);
     },
 

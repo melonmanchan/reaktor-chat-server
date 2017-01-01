@@ -1,14 +1,14 @@
 import cluster from 'cluster';
 import net     from 'net';
 
-import config          from '../config/config';
-import { log }         from '../utils';
+import config  from '../config/config';
+import { log } from '../utils';
 
 const workers = [];
 
 function spawn(index) {
     log(`Spawning worker ${index}`)
-    workers[index] = cluster.fork()
+    workers[index] = cluster.fork();
     workers[index].on('exit', (code, sig) => {
         log(`Respawning worker ${index}`);
         spawn(index);
@@ -37,7 +37,7 @@ function createClusterServer(app) {
             const worker = workers[getWorkerIndex(connection.remoteAddress, config.workers_count)];
             worker.send('sticky-session:connection', connection);
         }).listen(config.port, () => {
-            log(`Master running at port ${config.port}`)
+            log(`Master running at port ${config.port}`);
         });
 
         return { isMaster: true, server };
@@ -58,4 +58,4 @@ function createClusterServer(app) {
     }
 }
 
-export { createClusterServer }
+export { createClusterServer };

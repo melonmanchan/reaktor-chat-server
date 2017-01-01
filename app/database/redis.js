@@ -1,9 +1,9 @@
-import { config }          from '../config';
-import { createRedisSub } from './redis-sub';
-import { createRedisPub } from './redis-pub';
-
 import redis from 'redis';
 import Promise from 'bluebird'
+
+import { config }         from '../config';
+import { createRedisSub } from './redis-sub';
+import { createRedisPub } from './redis-pub';
 
 Promise.promisifyAll(redis.RedisClient.prototype)
 Promise.promisifyAll(redis.Multi.prototype)

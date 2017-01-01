@@ -1,6 +1,5 @@
 import Promise from 'bluebird'
 
-import EVENT_TYPES from './eventtypes';
 import events      from './eventtypes';
 import pub         from '../database/redis-pub'
 
@@ -51,7 +50,7 @@ function joinChannel(username, channelKey) {
 
 
 function bindEventsToSocket(socket) {
-    socket.on(EVENT_TYPES.DISCONNECT, () => {
+    socket.on(events.DISCONNECT, () => {
         log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
         const user = ChatStore.getUserBySocket(socket);
@@ -104,7 +103,7 @@ function bindEventsToSocket(socket) {
     });
 
 
-    socket.on(EVENT_TYPES.MESSAGE_POST, (data) => {
+    socket.on(events.MESSAGE_POST, (data) => {
         const user = ChatStore.getUserBySocket(socket);
         const date = new Date();
         const channel = data.channel;
@@ -116,7 +115,7 @@ function bindEventsToSocket(socket) {
 
         if (user.channels && user.channels.includes(channel)) {
             const payload = { message, user: user.username, date };
-            socket.broadcast.to(channel).emit(EVENT_TYPES.MESSAGE_POST, payload);
+            socket.broadcast.to(channel).emit(events.MESSAGE_POST, payload);
             addMessageToChannel(channel, payload);
         }
     });

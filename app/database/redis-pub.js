@@ -1,7 +1,9 @@
 import cluster from 'cluster';
 
-import events  from '../socketio/eventtypes';
-import { CHAT_CHANNEL, SYNC_CHANNEL, SYNC_EVENT, NEEDS_SYNC } from '../utils/constants';
+import events     from '../socketio/eventtypes';
+import syncEvents from './synceventtypes';
+
+import { CHAT_CHANNEL, SYNC_CHANNEL } from './channeltypes';
 
 let pub = null;
 
@@ -34,11 +36,11 @@ function pubUserLeftChannel(data) {
 }
 
 function pubRequestSync() {
-    publishToSyncChannel({ }, NEEDS_SYNC);
+    publishToSyncChannel({ }, syncEvents.NEEDS_SYNC);
 }
 
 function pubSyncChatStore(data) {
-    publishToSyncChannel(data, SYNC_EVENT);
+    publishToSyncChannel(data, syncEvents.SYNC_EVENT);
 }
 
 function createRedisPub(client) {

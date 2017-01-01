@@ -35,7 +35,7 @@ router.get('/:key/messages', resolveJWT, (req, res, next) => {
 });
 
 router.post('/:key/join', resolveJWT, (req, res, next) => {
-    const key = req.params.key
+    const key = req.params.key;
 
     // TODO: validate key
     if (!key) {
@@ -51,8 +51,7 @@ router.post('/:key/join', resolveJWT, (req, res, next) => {
         })
         .catch(e => {
             res.status(500).json({ error: e.message });
-        })
+        });
 });
-
 
 export default router;

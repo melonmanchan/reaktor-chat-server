@@ -1,4 +1,4 @@
-import { createSocketIO, sockets }       from './create';
-import { getSocketByUsername, joinChannel } from './socketutil';
+import { createSocketIO, io }          from './create';
+import { validateSocketJWT, disconnectSocket, bindEventsToSocket, joinChannel } from './socketutil';
 
-export { createSocketIO, sockets, getSocketByUsername, joinChannel };
+export { createSocketIO, io, validateSocketJWT, disconnectSocket, bindEventsToSocket, joinChannel };

@@ -2,7 +2,7 @@ import { config}     from '../config';
 import { decodeJWT } from '../utils';
 
 export default function resolveJWT(req, res, next)  {
-    let token = req.headers['authorization']
+    let token = req.headers['authorization'];
 
     if (!token) {
         res.status(400).json({ error: 'Token is missing' });
@@ -17,7 +17,7 @@ export default function resolveJWT(req, res, next)  {
             next();
         })
         .catch( err => {
-            res.err(400, GENERIC.TOKEN_MISSING, 'Token is missing!')
+            res.err(400, GENERIC.TOKEN_MISSING, 'Token is missing!');
             res.end();
         });
 };

@@ -1,15 +1,14 @@
 import socketio      from 'socket.io';
 import socketioRedis from 'socket.io-redis';
 
-import { ChatStore } from '../store';
-import EVENT_TYPES                                                                      from './eventtypes';
-import config                                                                           from '../config/config';
-import { log, LOG_TYPES }                                                               from '../utils';
-import { pubUserLoggedIn }                                                                from '../database/redis-pub';
+import { ChatStore }                             from '../store';
+import EVENT_TYPES                               from './eventtypes';
+import config                                    from '../config/config';
+import { log, LOG_TYPES }                        from '../utils';
+import { pubUserLoggedIn }                       from '../database/redis-pub';
 import { validateSocketJWT, getSocketByUsername,
-    disconnectSocket, bindEventsToSocket } from './socketutil';
+    disconnectSocket, bindEventsToSocket }       from './socketutil';
 
-const sockets = [];
 let io;
 
 function createSocketIO(server) {
@@ -21,7 +20,7 @@ function createSocketIO(server) {
             .then(user => {
                 const username = user.name;
 
-                const existing = ChatStore.getUserByName(username)
+                const existing = ChatStore.getUserByName(username);
 
                 if (existing) {
                     log('Name is taken!', LOG_TYPES.warn);
@@ -48,4 +47,4 @@ function createSocketIO(server) {
     });
 }
 
-export { sockets, createSocketIO, io };
+export { createSocketIO, io };
