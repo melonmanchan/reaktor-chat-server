@@ -10,7 +10,8 @@ const ChatStore = {
     },
 
     unserializeStoreState(state) {
-        this._activeUsers = state.activeUsers;
+        const stateObject = JSON.parse(state);
+        this._activeUsers = stateObject.activeUsers;
     },
 
     // Users
