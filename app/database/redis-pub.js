@@ -1,10 +1,16 @@
+import cluster from 'cluster';
+
 import events  from '../socketio/eventtypes';
-import { CHAT_CHANNEL } from '../utils/constants';
+import { CHAT_CHANNEL, SYNC_CHANNEL, SYNC_EVENT, NEEDS_SYNC } from '../utils/constants';
 
 let pub = null;
 
 function publishToRedisChannel(data, type) {
     pub.publish(CHAT_CHANNEL, JSON.stringify({ data, type }));
+}
+
+function publishToSyncChannel(data, type) {
+    pub.publish(SYNC_CHANNEL, JSON.stringify({ data, type }));
 }
 
 // User socket disconencted from the server
@@ -27,9 +33,17 @@ function pubUserLeftChannel(data) {
     publishToRedisChannel(data, events.USER_LEFT);
 }
 
+function pubRequestSync() {
+    publishToSyncChannel({ }, NEEDS_SYNC);
+}
+
+function pubSyncChatStore(data) {
+    publishToSyncChannel(data, SYNC_EVENT);
+}
+
 function createRedisPub(client) {
     pub = client.duplicate();
 }
 
 export { createRedisPub, pubUserDisconnected, pubUserLoggedIn,
-    pubUserJoinedChannel, pubUserLeftChannel };
+    pubUserJoinedChannel, pubUserLeftChannel, pubRequestSync, pubSyncChatStore };

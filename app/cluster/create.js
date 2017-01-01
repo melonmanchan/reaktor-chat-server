@@ -1,7 +1,8 @@
 import cluster from 'cluster';
 import net     from 'net';
-import config  from '../config/config';
-import { log } from '../utils';
+
+import config          from '../config/config';
+import { log }         from '../utils';
 
 const workers = [];
 

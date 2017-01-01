@@ -34,7 +34,6 @@ function disconnectSocket(socket, disconnectEvent) {
     }
 
     socket.disconnect(true);
-
     ChatStore.deleteSocket(socket);
 }
 

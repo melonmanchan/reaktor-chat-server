@@ -5,6 +5,14 @@ const ChatStore = {
 
     _connectedSockets : {},
 
+    serializeStoreState() {
+        return JSON.stringify({ activeUsers: this._activeUsers });
+    },
+
+    unserializeStoreState(state) {
+        this._activeUsers = state.activeUsers;
+    },
+
     // Users
     getUserByName(username) {
         return this._activeUsers.find(user => { return user.username === username; });
