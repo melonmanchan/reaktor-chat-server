@@ -1,4 +1,4 @@
-import findKey from 'lodash.findKey';
+import findKey from 'lodash.findkey';
 
 const ChatStore = {
     _activeUsers: [],
