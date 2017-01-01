@@ -43,9 +43,16 @@ router.post('/:key/join', resolveJWT, (req, res, next) => {
     }
 
     joinChannel(req.user.name, key);
+
     getLatestMessages(key)
         .then(messages => {
             const onlineUsers = ChatStore.getUsersInChannel(key);
+            const currentUser = { username: req.user.name, status: 'online' };
+
+            // Hack. Include self if not found
+            if (onlineUsers.findIndex((u) => { return u.username === currentUser.username; }) === -1) {
+                onlineUsers.push(currentUser) ;
+            }
 
             res.status(200).json({ key, messages, onlineUsers });
         })
