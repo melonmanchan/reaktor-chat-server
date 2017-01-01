@@ -1,16 +1,14 @@
 import crypto  from 'crypto';
 import Promise from 'bluebird';
+import base64  from 'urlsafe-base64';
 
-function randomBase64() {
-    return new Promise((reject, resolve) => {
-        crypto.randomBytes(46, (err, buf) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(buf.toString('base64'));
-            }
+const promiseRand = Promise.promisify(crypto.randomBytes);
+
+function randomBase64(postfix = '') {
+    return promiseRand(32)
+        .then((buffer) => {
+            return Promise.resolve(base64.encode(buffer));
         });
-    });
 }
 
 export { randomBase64 };

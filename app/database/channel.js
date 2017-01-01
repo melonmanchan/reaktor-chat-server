@@ -64,5 +64,5 @@ function getLatestMessages(channelKey, messageAmount = 25) {
     return getChannelMessagesByRange(channelKey, -(messageAmount), -1);
 }
 
-export { addMessageToChannel, getChannelMessagesByRange,
+export { addMessageToChannel, getChannelMessagesByRange, createChannel,
         getLatestMessages, getPublicChannels };

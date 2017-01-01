@@ -16,8 +16,8 @@ router.get('/', resolveJWT, (req, res, next) => {
 });
 
 router.post('/', resolveJWT, (req, res, next) => {
-    const name = req.params.name;
-    const isPublic = req.params.isPublic;
+    const name = req.body.name;
+    const isPublic = req.body.isPublic;
 
     if (!name || (typeof isPublic === 'undefined')) {
         return res.status(400).json({ error: 'Missing parameters!' });

@@ -26,6 +26,7 @@
     "lodash.findkey": "^4.6.0",
     "redis": "^2.6.3",
     "socket.io": "^1.7.2",
-    "socket.io-redis": "^2.0.1"
+    "socket.io-redis": "^2.0.1",
+    "urlsafe-base64": "^1.0.0"
   }
 }
