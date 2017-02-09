@@ -1,7 +1,8 @@
 # Reaktor chat server
 
 Backend of a simple, quick and scalable RESTful Socket.io/redis/express
-application.
+application. Originally made for Reaktor's summer internship challenge. They
+ended up hiring me, in case you're curious. :)
 
 See frontend here: https://github.com/melonmanchan/reaktor-chat-client
 
