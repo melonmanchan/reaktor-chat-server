@@ -12,7 +12,7 @@ let client = null;
 
 function createRedisConnection() {
     return new Promise((resolve, reject) => {
-        client = redis.createClient({ port: config.redis_port, host: config.redis_host });
+        client = redis.createClient(config.heroku_redis || { port: config.redis_port, host: config.redis_host });
 
         client.on('ready', () => {
             resolve();

@@ -28,5 +28,8 @@
     "socket.io": "^1.7.2",
     "socket.io-redis": "^2.0.1",
     "urlsafe-base64": "^1.0.0"
+  },
+  "engines": {
+      "node": "7.6.0"
   }
 }

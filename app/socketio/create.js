@@ -13,7 +13,8 @@ let io;
 
 function createSocketIO(server) {
     io = socketio(server);
-    io.adapter(socketioRedis({ port: config.redis_port, host: config.redis_host}));
+
+    io.adapter(socketioRedis(config.heroku_redis || { port: config.redis_port, host: config.redis_host}));
 
     io.on(EVENT_TYPES.NEW_CONNECTION, (socket) => {
         validateSocketJWT(socket)
